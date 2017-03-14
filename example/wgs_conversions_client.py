@@ -1,4 +1,10 @@
 #!/usr/bin/env python
+"""
+An example client for using the wgs_conversions services
+
+Dan Pierce
+2017-03-13
+"""
 import sys
 import rospy
 from wgs_conversions.srv import WgsConversion
@@ -79,9 +85,6 @@ def wgs_client(x,y,z):
 	
 	print "\nSuccessfully converted from enu back to xyz"
 	print "\tX: ",x,"\tY: ",y,"\tZ: ",z
-
-def usage():
-	return "%s [x y]"%sys.argv[0]
 
 if __name__ == "__main__":
 	if len(sys.argv) == 4:

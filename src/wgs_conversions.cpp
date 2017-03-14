@@ -5,7 +5,7 @@
  * Ref: Decker, B. L., World Geodetic System 1984,
  *          Defense Mapping Agency Aerospace Center. 
  *
- *	Note: Latitude and longitude are input and output in degrees with values between -180 and +360 
+ * Note: Latitude/longitude are in units of degrees with values ranging between -180 and +360 
  *
  * Dan Pierce
  * 2017-03-13

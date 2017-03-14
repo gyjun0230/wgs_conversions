@@ -1,11 +1,10 @@
 /*
- * A node
+ * An example client for using the wgs_conversions services 
  *
  * Dan Pierce
  * 2017-03-13
  */
 #include <ros/ros.h>
-
 #include "wgs_conversions/WgsConversion.h"
 
 ////////////////////////////////////////////////////////////////////////////////

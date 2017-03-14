@@ -1,14 +1,15 @@
 /*
- * A node
+ * A ROS node to provide services for performing WGS conversions. This code acts as a wrapper 
+ * for the WgsConversions class.
  *
  * Dan Pierce
  * 2017-03-13
  */
 #include <ros/ros.h>
-
 #include "wgs_conversions/wgs_conversions.h"
 #include "wgs_conversions/WgsConversion.h"
 
+/*! Primary class for WGS conversions server */
 class WgsConversionsServer{
 
 	public:
