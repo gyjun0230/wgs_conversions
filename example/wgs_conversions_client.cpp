@@ -18,12 +18,14 @@ int main(int argc, char** argv)
   int return_status;
   double xyz[3],lla[3],ref_lla[3],enu[3];
 
+  std::cout.precision(15);
+
   if (argc != 4){
-    ROS_INFO("Usage: wgs_conversions_client ECEF_X ECEF_Y ECEF_Z. Using default values:");
+    std::cout << "\nUsage: wgs_conversions_client ECEF_X ECEF_Y ECEF_Z. Using default values:" << std::endl;
     xyz[0]= 422143.588316416;
     xyz[1]= -5361864.950247487;
     xyz[2]= 3417050.753609172;
-    ROS_INFO("\tX: %f\tY: %f\tZ: %f\n", xyz[0], xyz[1], xyz[2]);
+    std::cout << "\tX: " << xyz[0] << "\tY: " << xyz[1] << "\tZ: " << xyz[2] << std::endl;
   }else{
     xyz[0]= atof(argv[1]);
     xyz[1]= atof(argv[2]);
@@ -45,15 +47,12 @@ int main(int argc, char** argv)
 
   return_status = client.call(srv);
 
-  if (return_status){
-    
+  if (return_status){    
     lla[0] = srv.response.lla[0];
     lla[1] = srv.response.lla[1];
     lla[2] = srv.response.lla[2];
-
-    ROS_INFO("Successfully converted from ecef to lla");
-    ROS_INFO("\tLat: %f\tLong: %f\tAlt: %f\n", lla[0], lla[1], lla[2]);
-
+    std::cout << "\nSuccessfully converted from ecef to lla" << std::endl;
+    std::cout << "\tLat: " << lla[0] << "\tLong: " << lla[1] << "\tAlt: " << lla[2] << std::endl;
   }else{
     ROS_ERROR("Failed to call service xyz2lla");
     return 1;
@@ -71,14 +70,11 @@ int main(int argc, char** argv)
   return_status = client.call(srv);
 
   if (return_status){
-
     xyz[0] = srv.response.xyz[0];
     xyz[1] = srv.response.xyz[1];
     xyz[2] = srv.response.xyz[2];
-
-    ROS_INFO("Successfully converted lla back to ecef");
-    ROS_INFO("\tX: %f\tY: %f\tZ: %f\n", xyz[0], xyz[1], xyz[2]);
-
+    std::cout << "\nSuccessfully converted from lla back to ecef" << std::endl;
+    std::cout << "\tX: " << xyz[0] << "\tY: " << xyz[1] << "\tZ: " << xyz[2] << std::endl;
   }else{
     ROS_ERROR("Failed to call service lla2xyz");
     return 1;
@@ -104,14 +100,11 @@ int main(int argc, char** argv)
   return_status = client.call(srv);
 
   if (return_status){
-
     enu[0] = srv.response.enu[0];
     enu[1] = srv.response.enu[1];
     enu[2] = srv.response.enu[2];
-
-    ROS_INFO("Successfully converted lla to enu");
-    ROS_INFO("\tE: %f\tN: %f\tU: %f\n", enu[0], enu[1], enu[2]);
-
+    std::cout << "\nSuccessfully converted from lla to enu" << std::endl;
+    std::cout << "\tE: " << enu[0] << "\tN: " << enu[1] << "\tU: " << enu[2] << std::endl;
   }else{
     ROS_ERROR("Failed to call service lla2enu");
     return 1;
@@ -133,14 +126,11 @@ int main(int argc, char** argv)
   return_status = client.call(srv);
 
   if (return_status){
-
     lla[0] = srv.response.lla[0];
     lla[1] = srv.response.lla[1];
     lla[2] = srv.response.lla[2];
-
-    ROS_INFO("Successfully converted enu back to lla");
-    ROS_INFO("\tLat: %f\tLong: %f\tAlt: %f\n", lla[0], lla[1], lla[2]);
-
+    std::cout << "\nSuccessfully converted from enu back to lla" << std::endl;
+    std::cout << "\tLat: " << lla[0] << "\tLong: " << lla[1] << "\tAlt: " << lla[2] << std::endl;
   }else{
     ROS_ERROR("Failed to call service enu2lla");
     return 1;
@@ -162,14 +152,11 @@ int main(int argc, char** argv)
   return_status = client.call(srv);
 
   if (return_status){
-
     enu[0] = srv.response.enu[0];
     enu[1] = srv.response.enu[1];
     enu[2] = srv.response.enu[2];
-
-    ROS_INFO("Successfully converted xyz to enu");
-    ROS_INFO("\tE: %f\tN: %f\tU: %f\n", enu[0], enu[1], enu[2]);
-
+    std::cout << "\nSuccessfully converted from ecef to enu" << std::endl;
+    std::cout << "\tE: " << enu[0] << "\tN: " << enu[1] << "\tU: " << enu[2] << std::endl;
   }else{
     ROS_ERROR("Failed to call service xyz2enu");
     return 1;
@@ -191,14 +178,11 @@ int main(int argc, char** argv)
   return_status = client.call(srv);
 
   if (return_status){
-
     xyz[0] = srv.response.xyz[0];
     xyz[1] = srv.response.xyz[1];
     xyz[2] = srv.response.xyz[2];
-
-    ROS_INFO("Successfully converted enu back to xyz");
-    ROS_INFO("\tLat: %f\tLong: %f\tAlt: %f\n", xyz[0], xyz[1], xyz[2]);
-
+    std::cout << "\nSuccessfully converted from enu back to ecef" << std::endl;
+    std::cout << "\tX: " << xyz[0] << "\tY: " << xyz[1] << "\tZ: " << xyz[2] << std::endl;
   }else{
     ROS_ERROR("Failed to call service enu2xyz");
     return 1;

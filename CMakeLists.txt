@@ -126,6 +126,7 @@ if(BUILD_WITH_CATKIN)
   endif (BUILD_ROS_NODE)
   if (BUILD_EXAMPLE)
     list(APPEND target_list wgs_conversions_client)
+    install(DIRECTORY example DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
   endif (BUILD_EXAMPLE)
   install(TARGETS ${target_list}
     ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
