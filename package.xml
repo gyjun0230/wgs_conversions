@@ -2,13 +2,13 @@
 <package>
   <name>wgs_conversions</name>
   <version>0.0.0</version>
-  <description>A ROS server implementation of the World Geodetic System (WGS) conversion functions for converting to/from LLA, ENU, and ECEF.</description>
+  <description>A ROS server implementation of the World Geodetic System (WGS) conversion functions for converting to/from LLA, ENU, and ECEF. </description>
 
   <maintainer email="jdp0009@auburn.edu">Dan Pierce</maintainer>
 
   <license>BSD</license>
 
-  <author email="jdp0009@auburn.edu">Dan Pierce</maintainer>
+  <author email="jdp0009@auburn.edu">Dan Pierce</author>
 
   <buildtool_depend>catkin</buildtool_depend>
   
