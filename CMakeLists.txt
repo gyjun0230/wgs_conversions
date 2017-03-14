@@ -22,7 +22,7 @@ option(BUILD_WITH_CATKIN "Build with Catkin?" OFF)
 if (DEFINED CATKIN_DEVEL_PREFIX)
   SET(BUILD_WITH_CATKIN ON)
 endif(DEFINED CATKIN_DEVEL_PREFIX)
-option(BUILD_ROS_NODE "Build ROS node." OFF)
+option(BUILD_ROS_NODE "Build ROS node." ON)
 
 option(BUILD_EXAMPLE "Build Example." OFF)
 
