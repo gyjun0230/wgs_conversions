@@ -27,6 +27,9 @@ class WgsConversionsServer{
 		bool xyz2enu(wgs_conversions::WgsConversion::Request &req,wgs_conversions::WgsConversion::Response &rsp);
 		bool enu2xyz(wgs_conversions::WgsConversion::Request &req,wgs_conversions::WgsConversion::Response &rsp);
 		
+		bool xyz2enu_vel(wgs_conversions::WgsConversion::Request &req,wgs_conversions::WgsConversion::Response &rsp);
+		bool enu2xyz_vel(wgs_conversions::WgsConversion::Request &req,wgs_conversions::WgsConversion::Response &rsp);
+		
 		WgsConversions wgs; /*!< WgsConversions instance */
 
     	ros::NodeHandle nh;
@@ -39,6 +42,9 @@ class WgsConversionsServer{
 
 		ros::ServiceServer xyz2enu_service;
 		ros::ServiceServer enu2xyz_service;
+
+		ros::ServiceServer xyz2enu_vel_service;
+		ros::ServiceServer enu2xyz_vel_service;
     
 };
 
@@ -52,6 +58,9 @@ WgsConversionsServer::WgsConversionsServer(){
 
 	xyz2enu_service = nh.advertiseService("xyz2enu", &WgsConversionsServer::xyz2enu, this);
 	enu2xyz_service = nh.advertiseService("enu2xyz", &WgsConversionsServer::enu2xyz, this);
+	
+	xyz2enu_vel_service = nh.advertiseService("xyz2enu_vel", &WgsConversionsServer::xyz2enu_vel, this);
+	enu2xyz_vel_service = nh.advertiseService("enu2xyz_vel", &WgsConversionsServer::enu2xyz_vel, this);
 	
 	ROS_INFO("Ready for WGS conversions");
 	
@@ -161,6 +170,42 @@ bool WgsConversionsServer::enu2xyz(wgs_conversions::WgsConversion::Request &req,
 
 	for(int i=0;i<3;i++)
 		rsp.xyz[i]=xyz[i];
+
+  	return true;
+}
+
+bool WgsConversionsServer::xyz2enu_vel(wgs_conversions::WgsConversion::Request &req,wgs_conversions::WgsConversion::Response &rsp){
+	
+	double xyz_vel[3],ref_lla[3],enu_vel[3];
+
+	for(int i=0;i<3;i++){
+		xyz_vel[i]=req.xyz[i];
+		ref_lla[i]=req.ref_lla[i];
+	}
+
+	if(!wgs.xyz2enu_vel(xyz_vel,ref_lla,enu_vel))
+		return false;
+
+	for(int i=0;i<3;i++)
+		rsp.enu[i]=enu_vel[i];
+
+  	return true;
+}
+
+bool WgsConversionsServer::enu2xyz_vel(wgs_conversions::WgsConversion::Request &req,wgs_conversions::WgsConversion::Response &rsp){
+	
+	double enu_vel[3],ref_lla[3],xyz_vel[3];
+
+	for(int i=0;i<3;i++){
+		enu_vel[i]=req.enu[i];
+		ref_lla[i]=req.ref_lla[i];
+	}
+
+	if(!wgs.enu2xyz_vel(enu_vel,ref_lla,xyz_vel))
+		return false;
+
+	for(int i=0;i<3;i++)
+		rsp.xyz[i]=xyz_vel[i];
 
   	return true;
 }

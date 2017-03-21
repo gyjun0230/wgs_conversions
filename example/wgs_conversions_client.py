@@ -86,6 +86,34 @@ def wgs_client(x,y,z):
 	print "\nSuccessfully converted from enu back to xyz"
 	print "\tX: ",x,"\tY: ",y,"\tZ: ",z
 
+	"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+	"" Convert velocities from XYZ to ENU
+	"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+	vx = 23.3883
+	vy = 2.1984
+	vz = 0.4462
+
+	rospy.wait_for_service('xyz2enu_vel')
+
+	xyz2enu_vel = rospy.ServiceProxy('xyz2enu_vel', WgsConversion)
+	rsp = xyz2enu_vel(xyz=(vx,vy,vz),ref_lla=(ref_lat,ref_lon,ref_alt))
+	(ve,vn,vu)=rsp.enu
+	
+	print "\nSuccessfully converted velocities from xyz to enu"
+	print "\tvE: ",ve,"\tvN: ",vn,"\tvU: ",vu
+
+	"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+	"" Convert velocities from ENU to XYZ
+	"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+	rospy.wait_for_service('enu2xyz_vel')
+
+	enu2xyz_vel = rospy.ServiceProxy('enu2xyz_vel', WgsConversion)
+	rsp = enu2xyz_vel(enu=(ve,vn,vu),ref_lla=(ref_lat,ref_lon,ref_alt))
+	(vx,vy,vz)=rsp.xyz
+	
+	print "\nSuccessfully converted velocities from enu back to xyz"
+	print "\tvX: ",vx,"\tvY: ",vy,"\tvZ: ",vz
+
 if __name__ == "__main__":
 	if len(sys.argv) == 4:
 		ECEFx = float(sys.argv[1])

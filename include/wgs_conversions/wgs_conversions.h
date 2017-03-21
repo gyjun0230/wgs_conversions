@@ -28,6 +28,10 @@ class WgsConversions{
     bool enu2xyz(double enu[3], double ref_lla[3], array_type& xyz);
     bool xyz2enu(double xyz[3], double ref_lla[3], array_type& enu);
 
+    /*! Convert velocities (or delta positions) to/from ENU/ECEF (requires reference LLA) */
+    bool enu2xyz_vel(double enu_vel[3], double ref_lla[3], array_type& xyz_vel);
+    bool xyz2enu_vel(double xyz_vel[3], double ref_lla[3], array_type& enu_vel);
+
   private:
 
     /*! Rotation matrix about a given axis */
