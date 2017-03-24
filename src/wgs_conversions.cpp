@@ -242,6 +242,40 @@ void WgsConversions::enu2xyz_vel(double xyz_vel[3], double enu_vel[3], double re
 
 }
 
+//--------------------------------------------------------------------------------------------------------------------------------
+// WgsConversions::xyz2enu_cov [Public]  --- convert position/velocity covariance from (ECEF X, ECEF Y, ECEF Z) to (East,North,Up)
+//--------------------------------------------------------------------------------------------------------------------------------
+void WgsConversions::xyz2enu_cov(double enu_cov[3][3], double xyz_cov[3][3], double ref_lla[3]){
+  
+    double R[3][3],Rt[3][3],Tmp[3][3];
+
+    rot3d(R, ref_lla[0], ref_lla[1]);
+
+    transposeMatrix(Rt,R);
+
+    matrixMultiply(Tmp,xyz_cov,Rt); // Tmp = xyz_cov*R'
+
+    matrixMultiply(enu_cov,R,Tmp); // enu_cov = R*xyz_cov*R'
+
+}
+
+//--------------------------------------------------------------------------------------------------------------------------------
+// WgsConversions::enu2xyz_cov [Public]  --- convert position/velocity covariance from (East,North,Up) to (ECEF X, ECEF Y, ECEF Z)
+//--------------------------------------------------------------------------------------------------------------------------------
+void WgsConversions::enu2xyz_cov(double xyz_cov[3][3], double enu_cov[3][3], double ref_lla[3]){
+    
+    double R[3][3],Rt[3][3],Tmp[3][3];
+
+    rot3d(R, ref_lla[0], ref_lla[1]);
+
+    transposeMatrix(Rt,R);
+
+    matrixMultiply(Tmp,enu_cov,R); // Tmp = enu_cov*R
+
+    matrixMultiply(xyz_cov,Rt,Tmp); // xyz_cov = R'*enu_cov*R
+
+}
+
 //--------------------------------------------------------------------------------------------
 // WgsConversions::enu2xyz [Private]  --- return the 3D rotation matrix to/from ECEF/ENU frame
 //--------------------------------------------------------------------------------------------

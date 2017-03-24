@@ -33,6 +33,10 @@ class WgsConversions{
     void enu2xyz_vel(double xyz_vel[3], double enu_vel[3], double ref_lla[3]);
     void xyz2enu_vel(double enu_vel[3], double xyz_vel[3], double ref_lla[3]);
 
+    /*! Convert position/velocity covariance to/from ENU/ECEF (requires reference LLA) */
+    void enu2xyz_cov(double xyz_cov[3][3], double enu_cov[3][3], double ref_lla[3]);
+    void xyz2enu_cov(double enu_cov[3][3], double xyz_cov[3][3], double ref_lla[3]);
+
   private:
 
     /*! Rotation matrix about a given axis */

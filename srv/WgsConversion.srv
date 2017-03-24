@@ -1,8 +1,12 @@
 float64[3] lla
 float64[3] xyz
 float64[3] enu
+float64[9] xyz_cov
+float64[9] enu_cov
 float64[3] ref_lla
 ---
 float64[3] lla
 float64[3] xyz
 float64[3] enu
+float64[9] xyz_cov
+float64[9] enu_cov

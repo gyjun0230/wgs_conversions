@@ -30,6 +30,9 @@ class WgsConversionsServer{
 		bool xyz2enu_vel(wgs_conversions::WgsConversion::Request &req,wgs_conversions::WgsConversion::Response &rsp);
 		bool enu2xyz_vel(wgs_conversions::WgsConversion::Request &req,wgs_conversions::WgsConversion::Response &rsp);
 		
+		bool xyz2enu_cov(wgs_conversions::WgsConversion::Request &req,wgs_conversions::WgsConversion::Response &rsp);
+		bool enu2xyz_cov(wgs_conversions::WgsConversion::Request &req,wgs_conversions::WgsConversion::Response &rsp);
+		
 		WgsConversions wgs; /*!< WgsConversions instance */
 
     	ros::NodeHandle nh;
@@ -45,7 +48,10 @@ class WgsConversionsServer{
 
 		ros::ServiceServer xyz2enu_vel_service;
 		ros::ServiceServer enu2xyz_vel_service;
-    
+
+		ros::ServiceServer xyz2enu_cov_service;
+		ros::ServiceServer enu2xyz_cov_service;
+
 };
 
 WgsConversionsServer::WgsConversionsServer(){
@@ -61,6 +67,9 @@ WgsConversionsServer::WgsConversionsServer(){
 	
 	xyz2enu_vel_service = nh.advertiseService("xyz2enu_vel", &WgsConversionsServer::xyz2enu_vel, this);
 	enu2xyz_vel_service = nh.advertiseService("enu2xyz_vel", &WgsConversionsServer::enu2xyz_vel, this);
+	
+	xyz2enu_cov_service = nh.advertiseService("xyz2enu_cov", &WgsConversionsServer::xyz2enu_cov, this);
+	enu2xyz_cov_service = nh.advertiseService("enu2xyz_cov", &WgsConversionsServer::enu2xyz_cov, this);
 	
 	ROS_INFO("Ready for WGS conversions");
 	
@@ -205,6 +214,44 @@ bool WgsConversionsServer::enu2xyz_vel(wgs_conversions::WgsConversion::Request &
 	for(int i=0;i<3;i++)
 		rsp.xyz[i]=xyz_vel[i];
 
+  	return true;
+}
+
+bool WgsConversionsServer::xyz2enu_cov(wgs_conversions::WgsConversion::Request &req,wgs_conversions::WgsConversion::Response &rsp){
+	
+	double xyz_cov[3][3],ref_lla[3],enu_cov[3][3];
+
+	for(int i=0;i<3;i++){
+		ref_lla[i]=req.ref_lla[i];
+		for(int j=0;j<3;j++)
+			xyz_cov[i][j]=req.xyz_cov[3*i+j];
+	}
+
+	wgs.xyz2enu_cov(enu_cov,xyz_cov,ref_lla);
+
+	for(int i=0;i<3;i++)
+		for(int j=0;j<3;j++)
+			rsp.enu_cov[3*i+j] = enu_cov[i][j];
+	
+  	return true;
+}
+
+bool WgsConversionsServer::enu2xyz_cov(wgs_conversions::WgsConversion::Request &req,wgs_conversions::WgsConversion::Response &rsp){
+	
+	double xyz_cov[3][3],ref_lla[3],enu_cov[3][3];
+
+	for(int i=0;i<3;i++){
+		ref_lla[i]=req.ref_lla[i];
+		for(int j=0;j<3;j++)
+			enu_cov[i][j]=req.enu_cov[3*i+j];
+	}
+	
+	wgs.enu2xyz_cov(xyz_cov,enu_cov,ref_lla);
+
+	for(int i=0;i<3;i++)
+		for(int j=0;j<3;j++)
+			rsp.xyz_cov[3*i+j] = xyz_cov[i][j];
+	
   	return true;
 }
 
