@@ -28,6 +28,39 @@ Converts from East, North, Up (in meters) to ECEF (in meters).
 
 Note: This requires a reference LLA position to serve as the origin of the local ENU frame. 
 
+### xyz2enu_vel ###
+Converts velocities from ECEF coordinates (in meters/sec) to East, North, Up (in meters/sec).
+
+Note: This requires a reference LLA position to serve as the origin of the local ENU frame. 
+
+### enu2xyz_vel ###
+Converts velocities from East, North, Up (in meters/sec) to ECEF (in meters/sec).
+
+Note: This requires a reference LLA position to serve as the origin of the local ENU frame. 
+
+### xyz2enu_cov ###
+Converts covariance matrix (of both position and velocity) from ECEF coordinates to East, North, Up.
+
+Note: This requires a reference LLA position to serve as the origin of the local ENU frame. 
+
+### enu2xyz_cov ###
+Converts covariance matrix (of both position and velocity) from East, North, Up to ECEF.
+
+Note(1): This requires a reference LLA position to serve as the origin of the local ENU frame.
+Note(2): If you are working in North, East, Down (NED) convention and want to convert an ECEF covariance into NED, the enu2xyz_cov service can still be helpful. Just rotate the ENU covariance to NED using
+begin{equation}
+P_{NED} = R P_{ENU} R^T
+\end{equation}
+where $P_{ENU}$ is the ENU covariance (returned from enu2xyz_cov), $P_{NED}$ is the NED covariance, and $R$ is a 3x3 matrix as shown below.
+
+\begin{equation}
+R = \left[\begin{array}{ccc}
+0 & 1 & 0\\
+1 & 0 & 0\\
+0 & 0 & -1\\
+\end{array}\right]
+\end{equation}
+
 ## Usage ##
 To familiarize yourself with using the ROS services, see the code in the example directory. This directory contains examples of a C++ and a python client.
 
