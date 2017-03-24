@@ -183,8 +183,7 @@ bool WgsConversionsServer::xyz2enu_vel(wgs_conversions::WgsConversion::Request &
 		ref_lla[i]=req.ref_lla[i];
 	}
 
-	if(!wgs.xyz2enu_vel(xyz_vel,ref_lla,enu_vel))
-		return false;
+	wgs.xyz2enu_vel(xyz_vel,ref_lla,enu_vel);
 
 	for(int i=0;i<3;i++)
 		rsp.enu[i]=enu_vel[i];
@@ -201,9 +200,8 @@ bool WgsConversionsServer::enu2xyz_vel(wgs_conversions::WgsConversion::Request &
 		ref_lla[i]=req.ref_lla[i];
 	}
 
-	if(!wgs.enu2xyz_vel(enu_vel,ref_lla,xyz_vel))
-		return false;
-
+	wgs.enu2xyz_vel(enu_vel,ref_lla,xyz_vel);
+	
 	for(int i=0;i<3;i++)
 		rsp.xyz[i]=xyz_vel[i];
 

@@ -31,32 +31,17 @@ WgsConversions::~WgsConversions(){
 //------------------------------------------------------------------------------------------------
 bool WgsConversions::enu2lla(double enu[3], double ref_lla[3], array_type& lla){
 
-	double ref_xyz[3],diff_xyz[3],xyz[3];
+	double ref_xyz[3],diff_xyz[3],xyz[3],R[3][3],Rt[3][3];
 
 	// First, calculate the xyz of reflat, reflon, refalt
 	if (!lla2xyz(ref_lla,ref_xyz))
 		return 0;
 
-    // Now rotate the (often short) diff_xyz vector to enu frame
-    double R1[3][3];
-    double R2[3][3];
-    rot(R1, 90 + ref_lla[1], 3);
-    rot(R2, 90 - ref_lla[0], 1);
-    double R[3][3];
-    R[0][0] = R2[0][0] * R1[0][0] + R2[0][1] * R1[1][0] + R2[0][2] * R1[2][0];
-    R[0][1] = R2[0][0] * R1[0][1] + R2[0][1] * R1[1][1] + R2[0][2] * R1[2][1];
-    R[0][2] = R2[0][0] * R1[0][2] + R2[0][1] * R1[1][2] + R2[0][2] * R1[2][2];
-    R[1][0] = R2[1][0] * R1[0][0] + R2[1][1] * R1[1][0] + R2[1][2] * R1[2][0];
-    R[1][1] = R2[1][0] * R1[0][1] + R2[1][1] * R1[1][1] + R2[1][2] * R1[2][1];
-    R[1][2] = R2[1][0] * R1[0][2] + R2[1][1] * R1[1][2] + R2[1][2] * R1[2][2];
-    R[2][0] = R2[2][0] * R1[0][0] + R2[2][1] * R1[1][0] + R2[2][2] * R1[2][0];
-    R[2][1] = R2[2][0] * R1[0][1] + R2[2][1] * R1[1][1] + R2[2][2] * R1[2][1];
-    R[2][2] = R2[2][0] * R1[0][2] + R2[2][1] * R1[1][2] + R2[2][2] * R1[2][2];
+    rot3d(R, ref_lla[0], ref_lla[1]);
 
-    // diffxyz = R'*enu;
-    diff_xyz[0] = R[0][0] * enu[0] + R[1][0] * enu[1] + R[2][0] * enu[2];
-    diff_xyz[1] = R[0][1] * enu[0] + R[1][1] * enu[1] + R[2][1] * enu[2];
-    diff_xyz[2] = R[0][2] * enu[0] + R[1][2] * enu[1] + R[2][2] * enu[2];
+    transposeMatrix(Rt,R);
+
+    matrixMultiply(diff_xyz,Rt,enu);
 
     xyz[0] = diff_xyz[0] + ref_xyz[0];
     xyz[1] = diff_xyz[1] + ref_xyz[1];
@@ -89,7 +74,7 @@ bool WgsConversions::lla2enu(double lla[3], double ref_lla[3], array_type& enu){
 //------------------------------------------------------------------------------------------------
 bool WgsConversions::xyz2lla(double xyz[3], array_type& lla){
 
-      //This dual-variable iteration seems to be 7 or 8 times faster than
+    //This dual-variable iteration seems to be 7 or 8 times faster than
     //a one-variable (in latitude only) iteration.  AKB 7/17/95
 
     double A_EARTH = 6378137.0;
@@ -211,38 +196,20 @@ bool WgsConversions::enu2xyz(double enu[3], double ref_lla[3], array_type& xyz){
 //------------------------------------------------------------------------------------------------
 bool WgsConversions::xyz2enu(double xyz[3], double ref_lla[3], array_type& enu){
   
-  	double ref_xyz[3];
+  	double ref_xyz[3],diff_xyz[3],R[3][3];
 
 	// First, calculate the xyz of reflat, reflon, refalt
     if (!lla2xyz(ref_lla,ref_xyz))
 		return 0;
 	
     //Difference xyz from reference point
-    double diff_xyz[3];
     diff_xyz[0] = xyz[0] - ref_xyz[0];
     diff_xyz[1] = xyz[1] - ref_xyz[1];
     diff_xyz[2] = xyz[2] - ref_xyz[2];
 
-    // Now rotate the (often short) diff_xyz vector to enu frame
-    double R1[3][3];
-    double R2[3][3];
-    rot(R1, 90 + ref_lla[1], 3);
-    rot(R2, 90 - ref_lla[0], 1);
+    rot3d(R, ref_lla[0], ref_lla[1]);
 
-    double R[3][3];
-    R[0][0] = R2[0][0] * R1[0][0] + R2[0][1] * R1[1][0] + R2[0][2] * R1[2][0];
-    R[0][1] = R2[0][0] * R1[0][1] + R2[0][1] * R1[1][1] + R2[0][2] * R1[2][1];
-    R[0][2] = R2[0][0] * R1[0][2] + R2[0][1] * R1[1][2] + R2[0][2] * R1[2][2];
-    R[1][0] = R2[1][0] * R1[0][0] + R2[1][1] * R1[1][0] + R2[1][2] * R1[2][0];
-    R[1][1] = R2[1][0] * R1[0][1] + R2[1][1] * R1[1][1] + R2[1][2] * R1[2][1];
-    R[1][2] = R2[1][0] * R1[0][2] + R2[1][1] * R1[1][2] + R2[1][2] * R1[2][2];
-    R[2][0] = R2[2][0] * R1[0][0] + R2[2][1] * R1[1][0] + R2[2][2] * R1[2][0];
-    R[2][1] = R2[2][0] * R1[0][1] + R2[2][1] * R1[1][1] + R2[2][2] * R1[2][1];
-    R[2][2] = R2[2][0] * R1[0][2] + R2[2][1] * R1[1][2] + R2[2][2] * R1[2][2];
-
-    enu[0] = R[0][0] * diff_xyz[0] + R[0][1] * diff_xyz[1] + R[0][2] * diff_xyz[2];
-    enu[1] = R[1][0] * diff_xyz[0] + R[1][1] * diff_xyz[1] + R[1][2] * diff_xyz[2];
-    enu[2] = R[2][0] * diff_xyz[0] + R[2][1] * diff_xyz[1] + R[2][2] * diff_xyz[2];
+    matrixMultiply(enu,R,diff_xyz);
 
     return 1;
 }
@@ -250,59 +217,87 @@ bool WgsConversions::xyz2enu(double xyz[3], double ref_lla[3], array_type& enu){
 //--------------------------------------------------------------------------------------------------------------
 // WgsConversions::xyz2enu_vel [Public]  --- convert velocities from (ECEF X, ECEF Y, ECEF Z) to (East,North,Up)
 //--------------------------------------------------------------------------------------------------------------
-bool WgsConversions::xyz2enu_vel(double xyz_vel[3], double ref_lla[3], array_type& enu_vel){
+void WgsConversions::xyz2enu_vel(double xyz_vel[3], double ref_lla[3], array_type& enu_vel){
   
-    // Rotate the velocity vector to enu frame
-    double R1[3][3];
-    double R2[3][3];
-    rot(R1, 90 + ref_lla[1], 3);
-    rot(R2, 90 - ref_lla[0], 1);
-
     double R[3][3];
-    R[0][0] = R2[0][0] * R1[0][0] + R2[0][1] * R1[1][0] + R2[0][2] * R1[2][0];
-    R[0][1] = R2[0][0] * R1[0][1] + R2[0][1] * R1[1][1] + R2[0][2] * R1[2][1];
-    R[0][2] = R2[0][0] * R1[0][2] + R2[0][1] * R1[1][2] + R2[0][2] * R1[2][2];
-    R[1][0] = R2[1][0] * R1[0][0] + R2[1][1] * R1[1][0] + R2[1][2] * R1[2][0];
-    R[1][1] = R2[1][0] * R1[0][1] + R2[1][1] * R1[1][1] + R2[1][2] * R1[2][1];
-    R[1][2] = R2[1][0] * R1[0][2] + R2[1][1] * R1[1][2] + R2[1][2] * R1[2][2];
-    R[2][0] = R2[2][0] * R1[0][0] + R2[2][1] * R1[1][0] + R2[2][2] * R1[2][0];
-    R[2][1] = R2[2][0] * R1[0][1] + R2[2][1] * R1[1][1] + R2[2][2] * R1[2][1];
-    R[2][2] = R2[2][0] * R1[0][2] + R2[2][1] * R1[1][2] + R2[2][2] * R1[2][2];
 
-    enu_vel[0] = R[0][0] * xyz_vel[0] + R[0][1] * xyz_vel[1] + R[0][2] * xyz_vel[2];
-    enu_vel[1] = R[1][0] * xyz_vel[0] + R[1][1] * xyz_vel[1] + R[1][2] * xyz_vel[2];
-    enu_vel[2] = R[2][0] * xyz_vel[0] + R[2][1] * xyz_vel[1] + R[2][2] * xyz_vel[2];
+    rot3d(R, ref_lla[0], ref_lla[1]);
 
-    return 1;
+    matrixMultiply(enu_vel,R,xyz_vel);
+
 }
 
 //--------------------------------------------------------------------------------------------------------------
 // WgsConversions::enu2xyz_vel [Public]  --- convert velocities from (East,North,Up) to (ECEF X, ECEF Y, ECEF Z)
 //--------------------------------------------------------------------------------------------------------------
-bool WgsConversions::enu2xyz_vel(double enu_vel[3], double ref_lla[3], array_type& xyz_vel){
-  
-    // Rotate the velocity vector to enu frame
-    double R1[3][3];
-    double R2[3][3];
-    rot(R1, 90 + ref_lla[1], 3);
-    rot(R2, 90 - ref_lla[0], 1);
+void WgsConversions::enu2xyz_vel(double enu_vel[3], double ref_lla[3], array_type& xyz_vel){
+    
+    double R[3][3],Rt[3][3];
 
-    double R[3][3];
-    R[0][0] = R2[0][0] * R1[0][0] + R2[0][1] * R1[1][0] + R2[0][2] * R1[2][0];
-    R[0][1] = R2[0][0] * R1[0][1] + R2[0][1] * R1[1][1] + R2[0][2] * R1[2][1];
-    R[0][2] = R2[0][0] * R1[0][2] + R2[0][1] * R1[1][2] + R2[0][2] * R1[2][2];
-    R[1][0] = R2[1][0] * R1[0][0] + R2[1][1] * R1[1][0] + R2[1][2] * R1[2][0];
-    R[1][1] = R2[1][0] * R1[0][1] + R2[1][1] * R1[1][1] + R2[1][2] * R1[2][1];
-    R[1][2] = R2[1][0] * R1[0][2] + R2[1][1] * R1[1][2] + R2[1][2] * R1[2][2];
-    R[2][0] = R2[2][0] * R1[0][0] + R2[2][1] * R1[1][0] + R2[2][2] * R1[2][0];
-    R[2][1] = R2[2][0] * R1[0][1] + R2[2][1] * R1[1][1] + R2[2][2] * R1[2][1];
-    R[2][2] = R2[2][0] * R1[0][2] + R2[2][1] * R1[1][2] + R2[2][2] * R1[2][2];
+    rot3d(R, ref_lla[0], ref_lla[1]);
 
-    xyz_vel[0] = R[0][0] * enu_vel[0] + R[1][0] * enu_vel[1] + R[2][0] * enu_vel[2];
-    xyz_vel[1] = R[0][1] * enu_vel[0] + R[1][1] * enu_vel[1] + R[2][1] * enu_vel[2];
-    xyz_vel[2] = R[0][2] * enu_vel[0] + R[1][2] * enu_vel[1] + R[2][2] * enu_vel[2];
+    transposeMatrix(Rt,R);
 
-    return 1;
+    matrixMultiply(xyz_vel,Rt,enu_vel);
+
+}
+
+//--------------------------------------------------------------------------------------------
+// WgsConversions::enu2xyz [Private]  --- return the 3D rotation matrix to/from ECEF/ENU frame
+//--------------------------------------------------------------------------------------------
+void WgsConversions::rot3d(double R[3][3], double reflat, double reflon){
+
+    double R1[3][3],R2[3][3];
+
+    rot(R1, 90 + reflon, 3);
+    rot(R2, 90 - reflat, 1);
+
+    matrixMultiply(R, R2, R1);
+}
+
+//------------------------------------------------------------------------------------------------
+// WgsConversions::matrixMultiply [Private]  --- Multiply 3x3 matrix times another 3x3 matrix C=AB
+//------------------------------------------------------------------------------------------------
+void WgsConversions::matrixMultiply(double C[3][3], double A[3][3], double B[3][3]){
+
+    C[0][0] = A[0][0] * B[0][0] + A[0][1] * B[1][0] + A[0][2] * B[2][0];
+    C[0][1] = A[0][0] * B[0][1] + A[0][1] * B[1][1] + A[0][2] * B[2][1];
+    C[0][2] = A[0][0] * B[0][2] + A[0][1] * B[1][2] + A[0][2] * B[2][2];
+    C[1][0] = A[1][0] * B[0][0] + A[1][1] * B[1][0] + A[1][2] * B[2][0];
+    C[1][1] = A[1][0] * B[0][1] + A[1][1] * B[1][1] + A[1][2] * B[2][1];
+    C[1][2] = A[1][0] * B[0][2] + A[1][1] * B[1][2] + A[1][2] * B[2][2];
+    C[2][0] = A[2][0] * B[0][0] + A[2][1] * B[1][0] + A[2][2] * B[2][0];
+    C[2][1] = A[2][0] * B[0][1] + A[2][1] * B[1][1] + A[2][2] * B[2][1];
+    C[2][2] = A[2][0] * B[0][2] + A[2][1] * B[1][2] + A[2][2] * B[2][2];
+
+}
+
+//------------------------------------------------------------------------------------------------
+// WgsConversions::matrixMultiply [Private]  --- Multiply 3x3 matrix times a 3x1 vector c=Ab
+//------------------------------------------------------------------------------------------------
+void WgsConversions::matrixMultiply(double c[3], double A[3][3], double b[3]){
+
+    c[0] = A[0][0] * b[0] + A[0][1] * b[1] + A[0][2] * b[2];
+    c[1] = A[1][0] * b[0] + A[1][1] * b[1] + A[1][2] * b[2];
+    c[2] = A[2][0] * b[0] + A[2][1] * b[1] + A[2][2] * b[2];
+
+}
+
+//------------------------------------------------------------------------------------------------
+// WgsConversions::transposeMatrix [Private]  --- transpose a 3x3 matrix At = A'
+//------------------------------------------------------------------------------------------------
+void WgsConversions::transposeMatrix(double At[3][3], double A[3][3]){
+
+    At[0][0] = A[0][0];
+    At[0][1] = A[1][0];
+    At[0][2] = A[2][0];
+    At[1][0] = A[0][1];
+    At[1][1] = A[1][1];
+    At[1][2] = A[2][1];
+    At[2][0] = A[0][2];
+    At[2][1] = A[1][2];
+    At[2][2] = A[2][2];
+
 }
 
 //------------------------------------------------------------------------------------------------
@@ -344,5 +339,4 @@ void WgsConversions::rot(double R[3][3], double angle, int axis) {
         R[1][0] = -sang;
         R[0][1] = sang;
     }
-    return;
 }
