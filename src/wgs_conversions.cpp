@@ -29,12 +29,12 @@ WgsConversions::~WgsConversions(){
 //------------------------------------------------------------------------------------------------
 // WgsConversions::enu2lla [Public]  --- convert from (East,North,Up) to (Lat,Long,Alt)
 //------------------------------------------------------------------------------------------------
-bool WgsConversions::enu2lla(double enu[3], double ref_lla[3], array_type& lla){
+bool WgsConversions::enu2lla(double lla[3], double enu[3], double ref_lla[3]){
 
 	double ref_xyz[3],diff_xyz[3],xyz[3],R[3][3],Rt[3][3];
 
 	// First, calculate the xyz of reflat, reflon, refalt
-	if (!lla2xyz(ref_lla,ref_xyz))
+	if (!lla2xyz(ref_xyz,ref_lla))
 		return 0;
 
     rot3d(R, ref_lla[0], ref_lla[1]);
@@ -47,7 +47,7 @@ bool WgsConversions::enu2lla(double enu[3], double ref_lla[3], array_type& lla){
     xyz[1] = diff_xyz[1] + ref_xyz[1];
     xyz[2] = diff_xyz[2] + ref_xyz[2];
 
-    if(!xyz2lla(xyz,lla))
+    if(!xyz2lla(lla,xyz))
     	return 0;
 
     return 1;
@@ -56,14 +56,14 @@ bool WgsConversions::enu2lla(double enu[3], double ref_lla[3], array_type& lla){
 //------------------------------------------------------------------------------------------------
 // WgsConversions::lla2enu [Public]  --- convert from (Lat,Long,Alt) to (East,North,Up)
 //------------------------------------------------------------------------------------------------
-bool WgsConversions::lla2enu(double lla[3], double ref_lla[3], array_type& enu){
+bool WgsConversions::lla2enu(double enu[3], double lla[3], double ref_lla[3]){
   
 	double xyz[3];
 
-	if(!lla2xyz(lla, xyz))
+	if(!lla2xyz(xyz,lla))
 		return 0;
 
-	if(!xyz2enu(xyz,ref_lla,enu))
+	if(!xyz2enu(enu,xyz,ref_lla))
 		return 0;
 
   return 1;
@@ -72,7 +72,7 @@ bool WgsConversions::lla2enu(double lla[3], double ref_lla[3], array_type& enu){
 //------------------------------------------------------------------------------------------------
 // WgsConversions::xyz2lla [Public]  --- convert from (ECEF X, ECEF Y, ECEF Z) to (Lat,Long,Alt)
 //------------------------------------------------------------------------------------------------
-bool WgsConversions::xyz2lla(double xyz[3], array_type& lla){
+bool WgsConversions::xyz2lla(double lla[3], double xyz[3]){
 
     //This dual-variable iteration seems to be 7 or 8 times faster than
     //a one-variable (in latitude only) iteration.  AKB 7/17/95
@@ -151,7 +151,7 @@ bool WgsConversions::xyz2lla(double xyz[3], array_type& lla){
 //------------------------------------------------------------------------------------------------
 // WgsConversions::lla2xyz [Public]  --- convert from (Lat,Long,Alt) to (ECEF X, ECEF Y, ECEF Z)
 //------------------------------------------------------------------------------------------------
-bool WgsConversions::lla2xyz(double lla[3], array_type& xyz){
+bool WgsConversions::lla2xyz(double xyz[3], double lla[3]){
 
 	if ((lla[0] < -90.0) | (lla[0] > +90.0) | (lla[1] < -180.0) | (lla[1] > +360.0)){
 		std::cout << "WGS lat or WGS lon out of range" << std::endl;
@@ -176,16 +176,16 @@ bool WgsConversions::lla2xyz(double lla[3], array_type& xyz){
 //------------------------------------------------------------------------------------------------
 // WgsConversions::enu2xyz [Public]  --- convert from (East,North,Up) to (ECEF X, ECEF Y, ECEF Z)
 //------------------------------------------------------------------------------------------------
-bool WgsConversions::enu2xyz(double enu[3], double ref_lla[3], array_type& xyz){
+bool WgsConversions::enu2xyz(double xyz[3], double enu[3], double ref_lla[3]){
 
   double lla[3];
 
   // first enu2lla
-  if(!enu2lla(enu, ref_lla, lla))
+  if(!enu2lla(lla,enu, ref_lla))
   	return 0;
 
   // then lla2xyz
-  if(!lla2xyz(lla, xyz))
+  if(!lla2xyz(xyz,lla))
   	return 0;
 
   return 1;
@@ -194,12 +194,12 @@ bool WgsConversions::enu2xyz(double enu[3], double ref_lla[3], array_type& xyz){
 //------------------------------------------------------------------------------------------------
 // WgsConversions::xyz2enu [Public]  --- convert from (ECEF X, ECEF Y, ECEF Z) to (East,North,Up)
 //------------------------------------------------------------------------------------------------
-bool WgsConversions::xyz2enu(double xyz[3], double ref_lla[3], array_type& enu){
+bool WgsConversions::xyz2enu(double enu[3], double xyz[3], double ref_lla[3]){
   
   	double ref_xyz[3],diff_xyz[3],R[3][3];
 
 	// First, calculate the xyz of reflat, reflon, refalt
-    if (!lla2xyz(ref_lla,ref_xyz))
+    if (!lla2xyz(ref_xyz,ref_lla))
 		return 0;
 	
     //Difference xyz from reference point
@@ -217,7 +217,7 @@ bool WgsConversions::xyz2enu(double xyz[3], double ref_lla[3], array_type& enu){
 //--------------------------------------------------------------------------------------------------------------
 // WgsConversions::xyz2enu_vel [Public]  --- convert velocities from (ECEF X, ECEF Y, ECEF Z) to (East,North,Up)
 //--------------------------------------------------------------------------------------------------------------
-void WgsConversions::xyz2enu_vel(double xyz_vel[3], double ref_lla[3], array_type& enu_vel){
+void WgsConversions::xyz2enu_vel(double enu_vel[3], double xyz_vel[3], double ref_lla[3]){
   
     double R[3][3];
 
@@ -230,7 +230,7 @@ void WgsConversions::xyz2enu_vel(double xyz_vel[3], double ref_lla[3], array_typ
 //--------------------------------------------------------------------------------------------------------------
 // WgsConversions::enu2xyz_vel [Public]  --- convert velocities from (East,North,Up) to (ECEF X, ECEF Y, ECEF Z)
 //--------------------------------------------------------------------------------------------------------------
-void WgsConversions::enu2xyz_vel(double enu_vel[3], double ref_lla[3], array_type& xyz_vel){
+void WgsConversions::enu2xyz_vel(double xyz_vel[3], double enu_vel[3], double ref_lla[3]){
     
     double R[3][3],Rt[3][3];
 

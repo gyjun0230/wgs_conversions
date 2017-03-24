@@ -77,7 +77,7 @@ bool WgsConversionsServer::xyz2lla(wgs_conversions::WgsConversion::Request &req,
 	for(int i=0;i<3;i++)
 		xyz[i]=req.xyz[i];
 
-	if(!wgs.xyz2lla(xyz,lla))
+	if(!wgs.xyz2lla(lla,xyz))
 		return false;
 
 	for(int i=0;i<3;i++)
@@ -93,7 +93,7 @@ bool WgsConversionsServer::lla2xyz(wgs_conversions::WgsConversion::Request &req,
 	for(int i=0;i<3;i++)
 		lla[i]=req.lla[i];
 
-	if(!wgs.lla2xyz(lla,xyz))
+	if(!wgs.lla2xyz(xyz,lla))
 		return false;
 
 	for(int i=0;i<3;i++)
@@ -111,7 +111,7 @@ bool WgsConversionsServer::lla2enu(wgs_conversions::WgsConversion::Request &req,
 		ref_lla[i]=req.ref_lla[i];
 	}
 
-	if(!wgs.lla2enu(lla,ref_lla,enu))
+	if(!wgs.lla2enu(enu,lla,ref_lla))
 		return false;
 
 	for(int i=0;i<3;i++)
@@ -129,7 +129,7 @@ bool WgsConversionsServer::enu2lla(wgs_conversions::WgsConversion::Request &req,
 		ref_lla[i]=req.ref_lla[i];
 	}
 
-	if(!wgs.enu2lla(enu,ref_lla,lla))
+	if(!wgs.enu2lla(lla,enu,ref_lla))
 		return false;
 
 	for(int i=0;i<3;i++)
@@ -147,7 +147,7 @@ bool WgsConversionsServer::xyz2enu(wgs_conversions::WgsConversion::Request &req,
 		ref_lla[i]=req.ref_lla[i];
 	}
 
-	if(!wgs.xyz2enu(xyz,ref_lla,enu))
+	if(!wgs.xyz2enu(enu,xyz,ref_lla))
 		return false;
 
 	for(int i=0;i<3;i++)
@@ -165,7 +165,7 @@ bool WgsConversionsServer::enu2xyz(wgs_conversions::WgsConversion::Request &req,
 		ref_lla[i]=req.ref_lla[i];
 	}
 
-	if(!wgs.enu2xyz(enu,ref_lla,xyz))
+	if(!wgs.enu2xyz(xyz,enu,ref_lla))
 		return false;
 
 	for(int i=0;i<3;i++)
@@ -183,7 +183,7 @@ bool WgsConversionsServer::xyz2enu_vel(wgs_conversions::WgsConversion::Request &
 		ref_lla[i]=req.ref_lla[i];
 	}
 
-	wgs.xyz2enu_vel(xyz_vel,ref_lla,enu_vel);
+	wgs.xyz2enu_vel(enu_vel,xyz_vel,ref_lla);
 
 	for(int i=0;i<3;i++)
 		rsp.enu[i]=enu_vel[i];
@@ -200,7 +200,7 @@ bool WgsConversionsServer::enu2xyz_vel(wgs_conversions::WgsConversion::Request &
 		ref_lla[i]=req.ref_lla[i];
 	}
 
-	wgs.enu2xyz_vel(enu_vel,ref_lla,xyz_vel);
+	wgs.enu2xyz_vel(xyz_vel,enu_vel,ref_lla);
 	
 	for(int i=0;i<3;i++)
 		rsp.xyz[i]=xyz_vel[i];

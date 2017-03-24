@@ -18,20 +18,20 @@ class WgsConversions{
     ~WgsConversions();
 
     /*! Convert to/from ENU/LLA (requires reference LLA) */
-    bool enu2lla(double enu[3], double ref_lla[3], array_type& lla);
-    bool lla2enu(double lla[3], double ref_lla[3], array_type& enu);
+    bool enu2lla(double lla[3], double enu[3], double ref_lla[3]);
+    bool lla2enu(double enu[3], double lla[3], double ref_lla[3]);
 
     /*! Convert to/from ECEF/LLA */
-    bool xyz2lla(double xyz[3], array_type& lla);
-    bool lla2xyz(double lla[3], array_type& xyz);
+    bool xyz2lla(double lla[3], double xyz[3]);
+    bool lla2xyz(double xyz[3], double lla[3]);
 
     /*! Convert to/from ENU/ECEF (requires reference LLA) */
-    bool enu2xyz(double enu[3], double ref_lla[3], array_type& xyz);
-    bool xyz2enu(double xyz[3], double ref_lla[3], array_type& enu);
+    bool enu2xyz(double xyz[3], double enu[3], double ref_lla[3]);
+    bool xyz2enu(double enu[3], double xyz[3], double ref_lla[3]);
 
     /*! Convert velocities (or delta positions) to/from ENU/ECEF (requires reference LLA) */
-    void enu2xyz_vel(double enu_vel[3], double ref_lla[3], array_type& xyz_vel);
-    void xyz2enu_vel(double xyz_vel[3], double ref_lla[3], array_type& enu_vel);
+    void enu2xyz_vel(double xyz_vel[3], double enu_vel[3], double ref_lla[3]);
+    void xyz2enu_vel(double enu_vel[3], double xyz_vel[3], double ref_lla[3]);
 
   private:
 
