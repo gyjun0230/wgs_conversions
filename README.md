@@ -50,15 +50,16 @@ Note(1): This requires a reference LLA position to serve as the origin of the lo
 
 Note(2): If you are working in North, East, Down (NED) convention and want to convert an ECEF covariance into NED, the enu2xyz_cov service can still be helpful. Just rotate the ENU covariance to NED using
 
+```
 P_ned = R P_enu R'
-
+```
 where P_enu is the ENU covariance (returned from enu2xyz_cov), P_ned is the NED covariance, R is a 3x3 matrix that represents the transformation from ENU to NED (shown below), and R' is the transpose of R.
 
+```
 R = [0  1  0]
-
     [1  0  0]
-    
     [0  0 -1]
+```
 
 ## Usage ##
 To familiarize yourself with using the ROS services, see the code in the example directory. This directory contains examples of a C++ and a python client.
