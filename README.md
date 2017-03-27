@@ -47,19 +47,16 @@ Note: This requires a reference LLA position to serve as the origin of the local
 Converts covariance matrix (of both position and velocity) from East, North, Up to ECEF.
 
 Note(1): This requires a reference LLA position to serve as the origin of the local ENU frame.
-Note(2): If you are working in North, East, Down (NED) convention and want to convert an ECEF covariance into NED, the enu2xyz_cov service can still be helpful. Just rotate the ENU covariance to NED using
-begin{equation}
-P_{NED} = R P_{ENU} R^T
-\end{equation}
-where $P_{ENU}$ is the ENU covariance (returned from enu2xyz_cov), $P_{NED}$ is the NED covariance, and $R$ is a 3x3 matrix as shown below.
 
-\begin{equation}
-R = \left[\begin{array}{ccc}
-0 & 1 & 0\\
-1 & 0 & 0\\
-0 & 0 & -1\\
-\end{array}\right]
-\end{equation}
+Note(2): If you are working in North, East, Down (NED) convention and want to convert an ECEF covariance into NED, the enu2xyz_cov service can still be helpful. Just rotate the ENU covariance to NED using
+
+P_ned = R P_enu R'
+
+where P_enu is the ENU covariance (returned from enu2xyz_cov), P_ned is the NED covariance, R is a 3x3 matrix that represents the transformation from ENU to NED (shown below), and R' is the transpose of R.
+
+R = [0  1  0]
+    [1  0  0]
+    [0  0 -1]
 
 ## Usage ##
 To familiarize yourself with using the ROS services, see the code in the example directory. This directory contains examples of a C++ and a python client.
