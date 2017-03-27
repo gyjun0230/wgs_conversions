@@ -55,7 +55,9 @@ P_ned = R P_enu R'
 where P_enu is the ENU covariance (returned from enu2xyz_cov), P_ned is the NED covariance, R is a 3x3 matrix that represents the transformation from ENU to NED (shown below), and R' is the transpose of R.
 
 R = [0  1  0]
+
     [1  0  0]
+    
     [0  0 -1]
 
 ## Usage ##
