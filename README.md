@@ -84,6 +84,11 @@ Run the python example client
 rosrun wgs_conversions wgs_conversions_client.py
 ```
 
+## To do ##
+- Add UTM conversions
+- Allow for NED local frame instead of ENU
+- Reference position as a class variable
+
 ## References ##
 Decker, B. L., World Geodetic System 1984, Defense Mapping Agency Aerospace Center. 
 
