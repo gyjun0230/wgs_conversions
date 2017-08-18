@@ -29,7 +29,7 @@ WgsConversions::~WgsConversions(){
 //------------------------------------------------------------------------------------------------
 // WgsConversions::enu2lla [Public]  --- convert from (East,North,Up) to (Lat,Long,Alt)
 //------------------------------------------------------------------------------------------------
-bool WgsConversions::enu2lla(double lla[3], double enu[3], double ref_lla[3]){
+bool WgsConversions::enu2lla(double lla[3], const double enu[3], const double ref_lla[3]){
 
 	double ref_xyz[3],diff_xyz[3],xyz[3],R[3][3],Rt[3][3];
 
@@ -56,7 +56,7 @@ bool WgsConversions::enu2lla(double lla[3], double enu[3], double ref_lla[3]){
 //------------------------------------------------------------------------------------------------
 // WgsConversions::lla2enu [Public]  --- convert from (Lat,Long,Alt) to (East,North,Up)
 //------------------------------------------------------------------------------------------------
-bool WgsConversions::lla2enu(double enu[3], double lla[3], double ref_lla[3]){
+bool WgsConversions::lla2enu(double enu[3], const double lla[3], const double ref_lla[3]){
   
 	double xyz[3];
 
@@ -72,7 +72,7 @@ bool WgsConversions::lla2enu(double enu[3], double lla[3], double ref_lla[3]){
 //------------------------------------------------------------------------------------------------
 // WgsConversions::xyz2lla [Public]  --- convert from (ECEF X, ECEF Y, ECEF Z) to (Lat,Long,Alt)
 //------------------------------------------------------------------------------------------------
-bool WgsConversions::xyz2lla(double lla[3], double xyz[3]){
+bool WgsConversions::xyz2lla(double lla[3], const double xyz[3]){
 
     //This dual-variable iteration seems to be 7 or 8 times faster than
     //a one-variable (in latitude only) iteration.  AKB 7/17/95
@@ -151,7 +151,7 @@ bool WgsConversions::xyz2lla(double lla[3], double xyz[3]){
 //------------------------------------------------------------------------------------------------
 // WgsConversions::lla2xyz [Public]  --- convert from (Lat,Long,Alt) to (ECEF X, ECEF Y, ECEF Z)
 //------------------------------------------------------------------------------------------------
-bool WgsConversions::lla2xyz(double xyz[3], double lla[3]){
+bool WgsConversions::lla2xyz(double xyz[3], const double lla[3]){
 
 	if ((lla[0] < -90.0) | (lla[0] > +90.0) | (lla[1] < -180.0) | (lla[1] > +360.0)){
 		std::cout << "WGS lat or WGS lon out of range" << std::endl;
@@ -176,7 +176,7 @@ bool WgsConversions::lla2xyz(double xyz[3], double lla[3]){
 //------------------------------------------------------------------------------------------------
 // WgsConversions::enu2xyz [Public]  --- convert from (East,North,Up) to (ECEF X, ECEF Y, ECEF Z)
 //------------------------------------------------------------------------------------------------
-bool WgsConversions::enu2xyz(double xyz[3], double enu[3], double ref_lla[3]){
+bool WgsConversions::enu2xyz(double xyz[3], const double enu[3], const double ref_lla[3]){
 
   double lla[3];
 
@@ -194,7 +194,7 @@ bool WgsConversions::enu2xyz(double xyz[3], double enu[3], double ref_lla[3]){
 //------------------------------------------------------------------------------------------------
 // WgsConversions::xyz2enu [Public]  --- convert from (ECEF X, ECEF Y, ECEF Z) to (East,North,Up)
 //------------------------------------------------------------------------------------------------
-bool WgsConversions::xyz2enu(double enu[3], double xyz[3], double ref_lla[3]){
+bool WgsConversions::xyz2enu(double enu[3], const double xyz[3], const double ref_lla[3]){
   
   	double ref_xyz[3],diff_xyz[3],R[3][3];
 
@@ -217,7 +217,7 @@ bool WgsConversions::xyz2enu(double enu[3], double xyz[3], double ref_lla[3]){
 //--------------------------------------------------------------------------------------------------------------
 // WgsConversions::xyz2enu_vel [Public]  --- convert velocities from (ECEF X, ECEF Y, ECEF Z) to (East,North,Up)
 //--------------------------------------------------------------------------------------------------------------
-void WgsConversions::xyz2enu_vel(double enu_vel[3], double xyz_vel[3], double ref_lla[3]){
+void WgsConversions::xyz2enu_vel(double enu_vel[3], const double xyz_vel[3], const double ref_lla[3]){
   
     double R[3][3];
 
@@ -230,7 +230,7 @@ void WgsConversions::xyz2enu_vel(double enu_vel[3], double xyz_vel[3], double re
 //--------------------------------------------------------------------------------------------------------------
 // WgsConversions::enu2xyz_vel [Public]  --- convert velocities from (East,North,Up) to (ECEF X, ECEF Y, ECEF Z)
 //--------------------------------------------------------------------------------------------------------------
-void WgsConversions::enu2xyz_vel(double xyz_vel[3], double enu_vel[3], double ref_lla[3]){
+void WgsConversions::enu2xyz_vel(double xyz_vel[3], const double enu_vel[3], const double ref_lla[3]){
     
     double R[3][3],Rt[3][3];
 
@@ -245,7 +245,7 @@ void WgsConversions::enu2xyz_vel(double xyz_vel[3], double enu_vel[3], double re
 //--------------------------------------------------------------------------------------------------------------------------------
 // WgsConversions::xyz2enu_cov [Public]  --- convert position/velocity covariance from (ECEF X, ECEF Y, ECEF Z) to (East,North,Up)
 //--------------------------------------------------------------------------------------------------------------------------------
-void WgsConversions::xyz2enu_cov(double enu_cov[3][3], double xyz_cov[3][3], double ref_lla[3]){
+void WgsConversions::xyz2enu_cov(double enu_Cov[3][3], const double xyz_Cov[3][3], const double ref_lla[3]){
   
     double R[3][3],Rt[3][3],Tmp[3][3];
 
@@ -253,16 +253,40 @@ void WgsConversions::xyz2enu_cov(double enu_cov[3][3], double xyz_cov[3][3], dou
 
     transposeMatrix(Rt,R);
 
-    matrixMultiply(Tmp,xyz_cov,Rt); // Tmp = xyz_cov*R'
+    matrixMultiply(Tmp,xyz_Cov,Rt); // Tmp = xyz_cov*R'
 
-    matrixMultiply(enu_cov,R,Tmp); // enu_cov = R*xyz_cov*R'
+    matrixMultiply(enu_Cov,R,Tmp); // enu_cov = R*xyz_cov*R'
+
+}
+
+void WgsConversions::xyz2enu_cov(double enu_cov[9], const double xyz_cov[9], const double ref_lla[3]){
+  
+    double xyz_Cov[3][3],enu_Cov[3][3];
+
+    for(int i=0;i<3;i++)
+        for(int j=0;j<3;j++)
+            xyz_Cov[i][j]=xyz_cov[3*i+j];
+
+    double R[3][3],Rt[3][3],Tmp[3][3];
+
+    rot3d(R, ref_lla[0], ref_lla[1]);
+
+    transposeMatrix(Rt,R);
+
+    matrixMultiply(Tmp,xyz_Cov,Rt);
+
+    matrixMultiply(enu_Cov,R,Tmp);
+
+    for(int i=0;i<3;i++)
+        for(int j=0;j<3;j++)
+            enu_cov[3*i+j] = enu_Cov[i][j];
 
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------
 // WgsConversions::enu2xyz_cov [Public]  --- convert position/velocity covariance from (East,North,Up) to (ECEF X, ECEF Y, ECEF Z)
 //--------------------------------------------------------------------------------------------------------------------------------
-void WgsConversions::enu2xyz_cov(double xyz_cov[3][3], double enu_cov[3][3], double ref_lla[3]){
+void WgsConversions::enu2xyz_cov(double xyz_Cov[3][3], const double enu_Cov[3][3], const double ref_lla[3]){
     
     double R[3][3],Rt[3][3],Tmp[3][3];
 
@@ -270,16 +294,39 @@ void WgsConversions::enu2xyz_cov(double xyz_cov[3][3], double enu_cov[3][3], dou
 
     transposeMatrix(Rt,R);
 
-    matrixMultiply(Tmp,enu_cov,R); // Tmp = enu_cov*R
+    matrixMultiply(Tmp,enu_Cov,R);
 
-    matrixMultiply(xyz_cov,Rt,Tmp); // xyz_cov = R'*enu_cov*R
+    matrixMultiply(xyz_Cov,Rt,Tmp);
 
+}
+
+void WgsConversions::enu2xyz_cov(double xyz_cov[9], const double enu_cov[9], const double ref_lla[3]){
+    
+    double xyz_Cov[3][3],enu_Cov[3][3];
+
+    for(int i=0;i<3;i++)
+        for(int j=0;j<3;j++)
+            enu_Cov[i][j]=enu_cov[3*i+j];
+
+    double R[3][3],Rt[3][3],Tmp[3][3];
+
+    rot3d(R, ref_lla[0], ref_lla[1]);
+
+    transposeMatrix(Rt,R);
+
+    matrixMultiply(Tmp,enu_Cov,R); 
+
+    matrixMultiply(xyz_Cov,Rt,Tmp);
+
+    for(int i=0;i<3;i++)
+        for(int j=0;j<3;j++)
+            xyz_cov[3*i+j] = xyz_Cov[i][j];
 }
 
 //--------------------------------------------------------------------------------------------
 // WgsConversions::enu2xyz [Private]  --- return the 3D rotation matrix to/from ECEF/ENU frame
 //--------------------------------------------------------------------------------------------
-void WgsConversions::rot3d(double R[3][3], double reflat, double reflon){
+void WgsConversions::rot3d(double R[3][3], const double reflat, const double reflon){
 
     double R1[3][3],R2[3][3];
 
@@ -292,7 +339,7 @@ void WgsConversions::rot3d(double R[3][3], double reflat, double reflon){
 //------------------------------------------------------------------------------------------------
 // WgsConversions::matrixMultiply [Private]  --- Multiply 3x3 matrix times another 3x3 matrix C=AB
 //------------------------------------------------------------------------------------------------
-void WgsConversions::matrixMultiply(double C[3][3], double A[3][3], double B[3][3]){
+void WgsConversions::matrixMultiply(double C[3][3], const double A[3][3], const double B[3][3]){
 
     C[0][0] = A[0][0] * B[0][0] + A[0][1] * B[1][0] + A[0][2] * B[2][0];
     C[0][1] = A[0][0] * B[0][1] + A[0][1] * B[1][1] + A[0][2] * B[2][1];
@@ -309,7 +356,7 @@ void WgsConversions::matrixMultiply(double C[3][3], double A[3][3], double B[3][
 //------------------------------------------------------------------------------------------------
 // WgsConversions::matrixMultiply [Private]  --- Multiply 3x3 matrix times a 3x1 vector c=Ab
 //------------------------------------------------------------------------------------------------
-void WgsConversions::matrixMultiply(double c[3], double A[3][3], double b[3]){
+void WgsConversions::matrixMultiply(double c[3], const double A[3][3], const double b[3]){
 
     c[0] = A[0][0] * b[0] + A[0][1] * b[1] + A[0][2] * b[2];
     c[1] = A[1][0] * b[0] + A[1][1] * b[1] + A[1][2] * b[2];
@@ -320,7 +367,7 @@ void WgsConversions::matrixMultiply(double c[3], double A[3][3], double b[3]){
 //------------------------------------------------------------------------------------------------
 // WgsConversions::transposeMatrix [Private]  --- transpose a 3x3 matrix At = A'
 //------------------------------------------------------------------------------------------------
-void WgsConversions::transposeMatrix(double At[3][3], double A[3][3]){
+void WgsConversions::transposeMatrix(double At[3][3], const double A[3][3]){
 
     At[0][0] = A[0][0];
     At[0][1] = A[1][0];
@@ -337,7 +384,7 @@ void WgsConversions::transposeMatrix(double At[3][3], double A[3][3]){
 //------------------------------------------------------------------------------------------------
 // WgsConversions::rot [Private]  --- rotation matrix
 //------------------------------------------------------------------------------------------------
-void WgsConversions::rot(double R[3][3], double angle, int axis) {
+void WgsConversions::rot(double R[3][3], const double angle, const int axis) {
 
     double cang = cos(angle * M_PI / 180);
     double sang = sin(angle * M_PI / 180);
